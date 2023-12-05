@@ -5,6 +5,10 @@
 # for DEV
 # ----------------------------------------------------------
 
+# For us
+streamlit
+opencv-python
+
 # wheel
 # nbresult
 colorama

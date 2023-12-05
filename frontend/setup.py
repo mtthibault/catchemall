@@ -7,16 +7,10 @@ requirements = [x.strip() for x in content if "git+" not in x]
 
 setup(
     name="catchemall",
-    version="0.0.X",
-    description="Cath'em All",
-    license="MIT",
-    author="Batch 1437",
-    # author_email="contact@lewagon.org",
-    # url="https://github.com/mtthibault/catchemall",
-    install_requires=requirements,
+    version="0.1",
+    description="catchemall website",
     packages=find_packages(),
-    test_suite="tests",
     # include_package_data: to install data from MANIFEST.in
     include_package_data=True,
-    zip_safe=False,
+    install_requires=requirements,
 )
