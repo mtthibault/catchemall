@@ -14,7 +14,7 @@ RUN pip install -r requirements.txt
 # Application set-up
 # ---------------------------------------------------------
 COPY images images
-COPy pages pages
+COPY pages pages
 COPY Home.py Home.py
 COPY MANIFEST.in MANIFEST.in
 # COPY
@@ -23,8 +23,8 @@ COPY MANIFEST.in MANIFEST.in
 COPY setup.py setup.py
 RUN pip install .
 
+# Testing if required
 COPY Makefile Makefile
-
 
 # Web app settings, 8080 for GCP
 # ---------------------------------------------------------
