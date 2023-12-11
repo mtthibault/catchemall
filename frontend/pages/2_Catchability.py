@@ -39,9 +39,13 @@ POKEMON_TYPE_LIST = [
 def call_api():
     # response = requests.get(url).json()
     response = requests.get(PREDICT_API_URL).json()
-    city = response[0]
-    print(f"Test API - {city['name']}: ({city['lat']}, {city['lon']})")
-    api_results = city
+
+    print("Test API", response)
+    print(f"Test API - {response['catchability']}")
+    # results = response[0]
+    # # print(f"Test API - {results['name']}: ({results['lat']}, {results['lon']})")
+    # api_results = results
+    api_results = response["catchability"]
     return api_results
 
 
@@ -129,6 +133,9 @@ with st.container(border=True):
             # display_results(255)
 
             results = call_api()  # >> OK
+            # catch_value = results["lat"]
+            catch_value = results
+
             # st.text(f"{results['name']}: ({results['lat']}, {results['lon']})")
             # st.write(f"Catchability is {results['lat']}")
             st.write("**The higher, the easier**")
@@ -137,9 +144,9 @@ with st.container(border=True):
                 label_visibility="hidden",
                 min_value=0,
                 max_value=255,
-                value=int(results["lat"]),
+                value=int(catch_value),
                 # disabled=True,
-                key="catch_slider"
+                key="catch_slider",
             )
 
         # Emile 07.12.23 : Enable reset widgets
