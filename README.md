@@ -47,13 +47,14 @@ You can explore the notebooks for a more in-depth understanding of the model arc
 ### Conclusion, difficulties & improvements' ideas
 The model achieved a 40% accuracy on the validation dataset.
 
-This indicates a need for improvement in the current classification approach.
+This indicates a need for improvement in the current classification approach:
 
-To enhance accuracy, exploring more complex model architectures and fine-tuning hyperparameters. Also, creating folders for hybrid Pokemon / dual types could improve the model's ability to handle the complexities associated with dual-type classification.
 
-Moreover, some pokémons, like Klefki, pose challenges for the model as he doesn't have specific characteristics showing to which type he belongs to.
+- Exploring more complex model architectures and fine-tuning hyperparameters, or / an creating folders for hybrid Pokemon / dual types could improve the model's ability to handle the complexities associated with dual-type classification.
 
-Furthermore, the dataset exhibits an imbalance in the number of images per Pokemon type, notably in types like Water that have much more pokémons in the Pokémon's Universe than Ghost types. To improve overall model performance, balancing the dataset by collecting more samples for underrepresented types or techniques like oversampling could lead to better results.
+- Moreover, some pokémons, like Klefki, pose challenges for the model as he doesn't have specific characteristics showing to which type he belongs to.
+
+- Furthermore, the dataset exhibits an imbalance in the number of images per Pokemon type, notably in types like Water that have much more pokémons in the Pokémon's Universe than Ghost types. To improve overall model performance, balancing the dataset by collecting more samples for underrepresented types or techniques like oversampling could lead to better results.
 
 ## 🪤 Machine Learning Project : Catchability prediction (regression)
 
