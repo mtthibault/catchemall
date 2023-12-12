@@ -12,7 +12,9 @@ Greetings, Pokémon Trainers! 🎉
 We are thrilled to present My PokéApp, a powerful tool designed to enhance your Pokémon journey by providing insights beyond the capabilities of your traditional Pokédex.
 
 Our objective is the following :
+
 1 - Enabling the possibility for pokétrainers to take a picture of a Pokémon, and determine automatically its type based on how it looks thanks to Deep Learning
+
 2 - Determining the catchability of a pokémon based on its statistics thanks to Machine Learning
 
 ## 📸 Deep Learning project : Pokemon type classification (computer vision)
