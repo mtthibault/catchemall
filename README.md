@@ -22,7 +22,7 @@ Our objective is the following :
 ### Data sources
 We used a dataset comprising 809 images sourced from Kaggle, accessible [here](https://www.kaggle.com/datasets/vishalsubbiah/pokemon-images-and-types). This dataset encompasses the initial 809 Pokémon, spanning generations 1 to 7, complete with their respective images and types. Notably, certain Pokémon possess dual types, exemplified by creatures like Moltres, a Fire and Flying type.
 
-Furthermore, we conducted web scraping on [Bulbapedia](https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_by_National_Pok%C3%A9dex_number) to augment our dataset, yielding a substantial collection of 42,000 images categorized by Pokémon type.
+Furthermore, we conducted web scraping on [Pokemondb](https://pokemondb.net/) to augment our dataset, yielding a substantial collection of 42,000 images categorized by Pokémon type.
 
 ### Methodology
 In the preprocessing phase, we employed one-hot encoding for each Pokémon type, resulting in 18 distinct categories.
@@ -32,16 +32,28 @@ Additionally, we developed functions to systematically organize each Pokémon im
 Following these preparations, we experimented with various models, including Inception V3, VGG16, and ResNet50.
 
 ### Models & metrics
-we chose resnet in the end
-(description des layers dans le CNN)
+After running different models, we ended up choosing ResNet50.
 
-### Results
-40% accuracy
+First, we loaded a pre-trained ResNet50 model and froze its weights to retain learned features.
 
-### Difficulties & improvements' ideas
-some pokemons look like shit (example : Klefki)
-too much pokemons in some types (exemple : water), hypothesis we should maybe have the same nb of images for each types next time
-maybe we should have created folders for hybrid pokemons
+A custom model was constructed by integrating data augmentation layers, the ResNet50 base model, and additional dense layers for classification.
+
+After that, a data preprocessing function utilizing ResNet50's preprocess_input was implemented. Additionally, early stopping and learning rate reduction callbacks were set up.
+
+In the end, the model was compiled with the Adam optimizer and categorical crossentropy loss. Training was executed on preprocessed datasets, with monitoring facilitated through early stopping and learning rate reduction.
+
+You can explore the notebooks for a more in-depth understanding of the model architecture, data preprocessing steps, and the training process.
+
+### Conclusion, difficulties & improvements' ideas
+The model achieved a 40% accuracy on the validation dataset.
+
+This indicates a need for improvement in the current classification approach.
+
+To enhance accuracy, exploring more complex model architectures and fine-tuning hyperparameters. Also, creating folders for hybrid Pokemon / dual types could improve the model's ability to handle the complexities associated with dual-type classification.
+
+Moreover, some pokémons, like Klefki, pose challenges for the model as he doesn't have specific characteristics showing to which type he belongs to.
+
+Furthermore, the dataset exhibits an imbalance in the number of images per Pokemon type, notably in types like Water that have much more pokémons in the Pokémon's Universe than Ghost types. To improve overall model performance, balancing the dataset by collecting more samples for underrepresented types or techniques like oversampling could lead to better results.
 
 ## 🪤 Machine Learning Project : Catchability prediction (regression)
 
@@ -54,4 +66,4 @@ https://www.kaggle.com/datasets/rounakbanik/pokemon
 ### Models & metrics
 
 
-### Results & improvements' ideas
+### Conclusion, difficulties & improvements' ideas
