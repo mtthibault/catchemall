@@ -66,11 +66,12 @@ GS_DIR=gs://datascience-mlops/taxi-fare-ny
 
 show_sources_all:
 	-ls -laR ~/.lewagon/mlops/data
-	-bq ls ${BQ_DATASET}
-	-bq show ${BQ_DATASET}.processed_1k
-	-bq show ${BQ_DATASET}.processed_200k
-	-bq show ${BQ_DATASET}.processed_all
-	-gsutil ls gs://${BUCKET_NAME}
+# -ls -laR ~/.lewagon/mlops/data
+# -bq ls ${BQ_DATASET}
+# -bq show ${BQ_DATASET}.processed_1k
+# -bq show ${BQ_DATASET}.processed_200k
+# -bq show ${BQ_DATASET}.processed_all
+# -gsutil ls gs://${BUCKET_NAME}
 
 reset_local_files:
 	rm -rf ${ML_DIR}

@@ -7,7 +7,7 @@ requirements = [x.strip() for x in content if "git+" not in x]
 
 setup(
     name="catchemall",
-    version="0.0.X",
+    version="0.0.1",
     description="Cath'em All",
     license="MIT",
     author="Batch 1437",

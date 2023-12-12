@@ -34,11 +34,23 @@ GAR_IMAGE = os.environ.get("GAR_IMAGE")
 GAR_MEMORY = os.environ.get("GAR_MEMORY")
 
 ##################  CONSTANTS  #####################
-LOCAL_DATA_PATH = os.path.join(os.path.expanduser("~"), ".lewagon", "mlops", "data")
-LOCAL_REGISTRY_PATH = os.path.join(
-    os.path.expanduser("~"), ".lewagon", "mlops", "training_outputs"
+# LOCAL_DATA_PATH = os.path.join(os.path.expanduser("~"), ".lewagon", "mlops", "data")
+# LOCAL_REGISTRY_PATH = os.path.join(
+#     os.path.expanduser("~"), ".lewagon", "mlops", "training_outputs"
+# )
+# Emile 11.12.2023
+CATCH_PREDICT_CSV_FILE = os.environ.get("CATCH_PREDICT_CSV_FILE")
+LOCAL_DATA_PATH = os.path.join(
+    os.path.expanduser("~"), "code", "mtthibault", "catchemall", "raw_data"
 )
-
+LOCAL_REGISTRY_PATH = os.path.join(
+    os.path.expanduser("~"),
+    "code",
+    "mtthibault",
+    "catchemall",
+    "raw_data",
+    "training_outputs",
+)
 # Types of Pokemon
 POKEMON_TYPE_LIST = [
     "Bug",
