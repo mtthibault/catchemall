@@ -20,17 +20,16 @@ Our objective is the following :
 ## 📸 Deep Learning Project : Pokemon type classification (computer vision)
 
 ### Data sources
-We used a dataset of 809 images from Kaggle, available [here](https://www.kaggle.com/datasets/vishalsubbiah/pokemon-images-and-types).
+We used a dataset comprising 809 images sourced from Kaggle, accessible [here](https://www.kaggle.com/datasets/vishalsubbiah/pokemon-images-and-types). This dataset encompasses the initial 809 Pokémon, spanning generations 1 to 7, complete with their respective images and types. Notably, certain Pokémon possess dual types, exemplified by creatures like Moltres, a Fire and Flying type.
 
-This dataset contains the first 809 pokémons, which represents the generation 1 to 7.
-
-In addition, we scraped [Bulbapedia](https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_by_National_Pok%C3%A9dex_number) in order to get a higher amount of images per type of pokémon, and we ended up with 42,000 thousand images.
+Furthermore, we conducted web scraping on [Bulbapedia](https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_by_National_Pok%C3%A9dex_number) to augment our dataset, yielding a substantial collection of 42,000 images categorized by Pokémon type.
 
 ### Methodology
-cleaning : fonctions pour trier les images dans des dossiers par type, dupliquer les images si pokemon existant dans 2 types, split du train et test set, et preprocessing pour resizer toutes les images et leur appliquer des filtres
-preprocessing : OHE pour chaque catégorie
+In the preprocessing phase, we employed one-hot encoding for each Pokémon type, resulting in 18 distinct categories.
 
-we tried inception V3 model, vgg16, resnet
+Additionally, we developed functions to systematically organize each Pokémon image into its corresponding type folder. This process accommodated cases where a Pokémon had dual types, necessitating the duplication of its image. We also implemented functions to automate the creation of train/test datasets, with 80% of the images allocated to the training set and 20% to the testing set.
+
+Following these preparations, we experimented with various models, including Inception V3, VGG16, and ResNet50.
 
 ### Models & metrics
 we chose resnet in the end
