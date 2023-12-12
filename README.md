@@ -17,13 +17,14 @@ Our objective is the following :
 
 2 - Determining the catchability of a pokémon based on its statistics thanks to Machine Learning
 
-## 📸 Deep Learning project : Pokemon type classification (computer vision)
+## 📸 Deep Learning Project : Pokemon type classification (computer vision)
 
 ### Data sources
-mettre lien Kaggle
-+ expliquer : dataset avec 809 pokemons (seven generations) et une colonne type1 et une colonne type2
+We used a dataset of 809 images from Kaggle, available [here](https://www.kaggle.com/datasets/vishalsubbiah/pokemon-images-and-types).
 
-scraping Bulbapedia in order to get a massive amount of images and improve our accuracy
+This dataset contains the first 809 pokémons, which represents the generation 1 to 7.
+
+In addition, we scraped [Bulbapedia](https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_by_National_Pok%C3%A9dex_number) in order to get a higher amount of images per type of pokémon, and we ended up with 42,000 thousand images.
 
 ### Methodology
 cleaning : fonctions pour trier les images dans des dossiers par type, dupliquer les images si pokemon existant dans 2 types, split du train et test set, et preprocessing pour resizer toutes les images et leur appliquer des filtres
@@ -43,10 +44,10 @@ some pokemons look like shit (example : Klefki)
 too much pokemons in some types (exemple : water), hypothesis we should maybe have the same nb of images for each types next time
 maybe we should have created folders for hybrid pokemons
 
-## 🪤 Machine Learning project : Catchability prediction (regression)
+## 🪤 Machine Learning Project : Catchability prediction (regression)
 
 ### Data sources
-
+https://www.kaggle.com/datasets/rounakbanik/pokemon
 
 ### Methodology
 
