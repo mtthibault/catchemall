@@ -13,21 +13,21 @@ We are thrilled to present My PokéApp, a powerful tool designed to enhance your
 
 Our objective is the following :
 
-1 - Enabling the possibility for pokétrainers to take a picture of a Pokémon, and determine automatically its type based on how it looks thanks to Deep Learning
+- Enabling the possibility for pokétrainers to take a picture of a pokémon, and determine automatically its type based on how it looks thanks to Deep Learning
 
-2 - Determining the catchability of a pokémon based on its statistics thanks to Machine Learning
+- Determining the catchability of a pokémon based on its statistics thanks to Machine Learning
 
 ## 📸 Deep Learning Project : Pokemon type classification (computer vision)
 
 ### Data sources
-We used a dataset comprising 809 images sourced from Kaggle, accessible [here](https://www.kaggle.com/datasets/vishalsubbiah/pokemon-images-and-types). This dataset encompasses the initial 809 Pokémon, spanning generations 1 to 7, complete with their respective images and types. Notably, certain Pokémon possess dual types, exemplified by creatures like Moltres, a Fire and Flying type.
+We used a dataset comprising 809 images sourced from Kaggle, accessible [here](https://www.kaggle.com/datasets/vishalsubbiah/pokemon-images-and-types). This dataset encompasses the initial 809 pokémons, spanning generations 1 to 7, complete with their respective images and types. Notably, some pokémons possess dual types, exemplified by creatures like Moltres, a Fire and Flying type.
 
-Furthermore, we conducted web scraping on [Pokemondb](https://pokemondb.net/) to augment our dataset, yielding a substantial collection of 42,000 images categorized by Pokémon type.
+Furthermore, we conducted web scraping on [Pokemondb](https://pokemondb.net/) to augment our dataset, yielding a substantial collection of 42,000 images categorized by pokémon type.
 
 ### Methodology
-In the preprocessing phase, we employed one-hot encoding for each Pokémon type, resulting in 18 distinct categories.
+In the preprocessing phase, we employed one-hot encoding for each pokémon type, resulting in 18 distinct categories.
 
-Additionally, we developed functions to systematically organize each Pokémon image into its corresponding type folder. This process accommodated cases where a Pokémon had dual types, necessitating the duplication of its image. We also implemented functions to automate the creation of train/test datasets, with 80% of the images allocated to the training set and 20% to the testing set.
+Additionally, we developed functions to systematically organize each pokémon image into its corresponding type folder. This process accommodated cases where a pokémon had dual types, necessitating the duplication of its image. We also implemented functions to automate the creation of train/test datasets, with 80% of the images allocated to the training set and 20% to the testing set.
 
 Following these preparations, we experimented with various models, including Inception V3, VGG16, and ResNet50.
 
@@ -50,11 +50,11 @@ The model achieved a 40% accuracy on the validation dataset.
 This indicates a need for improvement in the current classification approach:
 
 
-- Exploring more complex model architectures and fine-tuning hyperparameters, or / an creating folders for hybrid Pokemon / dual types could improve the model's ability to handle the complexities associated with dual-type classification.
+- Exploring more complex model architectures and fine-tuning hyperparameters, or / an creating folders for hybrid pokémon / dual types could improve the model's ability to handle the complexities associated with dual-type classification.
 
 - Moreover, some pokémons, like Klefki, pose challenges for the model as he doesn't have specific characteristics showing to which type he belongs to.
 
-- Furthermore, the dataset exhibits an imbalance in the number of images per Pokemon type, notably in types like Water that have much more pokémons in the Pokémon's Universe than Ghost types. To improve overall model performance, balancing the dataset by collecting more samples for underrepresented types or techniques like oversampling could lead to better results.
+- Furthermore, the dataset exhibits an imbalance in the number of images per pokémon type, notably in types like Water that have much more pokémons in the Pokémon's Universe than Ghost types. To improve overall model performance, balancing the dataset by collecting more samples for underrepresented types or techniques like oversampling could lead to better results.
 
 ## 🪤 Machine Learning Project : Catchability prediction (regression)
 
