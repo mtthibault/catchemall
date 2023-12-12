@@ -54,6 +54,8 @@ This indicates a need for improvement in the current classification approach:
 
 - Moreover, some pokémons, like Klefki, pose challenges for the model as he doesn't have specific characteristics showing to which type he belongs to.
 
+<img src='https://www.pokepedia.fr/images/b/be/Trousselin-XY.png  width="250">
+
 - Furthermore, the dataset exhibits an imbalance in the number of images per pokémon type, notably in types like Water that have much more pokémons in the Pokémon's Universe than Ghost types. To improve overall model performance, balancing the dataset by collecting more samples for underrepresented types or techniques like oversampling could lead to better results.
 
 ## 🪤 Machine Learning Project : Catchability prediction (regression)
