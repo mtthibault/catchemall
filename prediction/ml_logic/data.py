@@ -6,51 +6,109 @@ from pathlib import Path
 
 from prediction.params import *
 
+# Emile 11.12.2023
+import ast
+
+
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     """
     Clean raw data by
     - assigning correct dtypes to each column
     - removing buggy or irrelevant transactions
     """
-    # Compress raw_data by setting types to DTYPES_RAW
-    df = df.astype(DTYPES_RAW)
+    # Emile 11.12.2023
 
-    # Remove buggy transactions
-    df = df.drop_duplicates()  # TODO: handle whether data is consumed in chunks directly in the data source
-    df = df.dropna(how='any', axis=0)
+    print("Initial Shape:", df.shape)
 
-    df = df[(df.dropoff_latitude != 0) | (df.dropoff_longitude != 0) |
-                    (df.pickup_latitude != 0) | (df.pickup_longitude != 0)]
+    # Fill missing values
+    if "height_m" in df.columns:
+        df["height_m"].fillna(df["height_m"].median(), inplace=True)
+    if "weight_kg" in df.columns:
+        df["weight_kg"].fillna(df["weight_kg"].median(), inplace=True)
 
-    df = df[df.passenger_count > 0]
-    df = df[df.fare_amount > 0]
+    # Drop columns
+    columns_to_drop = ["percentage_male"]
+    df = df.drop(columns=[col for col in columns_to_drop if col in df.columns])
+    print("After dropping columns:", df.shape)
+    print("After dropping columns:", df.head())
 
-    # Remove geographically irrelevant transactions (rows)
-    df = df[df.fare_amount < 400]
-    df = df[df.passenger_count < 8]
+    # Convert 'capture_rate' to numeric and create 'catchability'
+    df["capture_rate"] = pd.to_numeric(df["capture_rate"], errors="coerce")
+    df["catchability"] = df["capture_rate"] / 2.55
+    df = df.dropna(subset=["catchability"])
+    print("After capture rate conversion to catchability:", df.shape)
 
-    df = df[df["pickup_latitude"].between(left=40.5, right=40.9)]
-    df = df[df["dropoff_latitude"].between(left=40.5, right=40.9)]
-    df = df[df["pickup_longitude"].between(left=-74.3, right=-73.7)]
-    df = df[df["dropoff_longitude"].between(left=-74.3, right=-73.7)]
+    df = df.drop(columns=["capture_rate"])
+    # Check shape after dropping columns
+    print("Shape after dropping capture rate:", df.shape)
+    print(" Head after dropping capture rate:", df.head())
 
-    print("✅ data cleaned")
+    # Handle 'type2' and create 'combined_type'
+    df["type2"].fillna("None", inplace=True)
+    df["combined_type"] = df["type1"] + "_" + df["type2"]
+
+    # Check shape after creating combined type
+    print("Shape after combined type:", df.shape)
+    print("Head after combined type:", df.head)
+
+    # Handle 'abilities'
+    if "abilities" in df.columns:
+        # Convert string representation of list to actual list
+        df["abilities"] = df["abilities"].apply(ast.literal_eval)
+
+        # Collect all unique abilities from the dfset
+        all_abilities = set().union(*df["abilities"])
+
+        # Prepare df for new DataFrame
+        abilities_dicts = []
+        for index, row in df.iterrows():
+            abilities_dict = {
+                ability: int(ability in row["abilities"]) for ability in all_abilities
+            }
+            abilities_dicts.append(abilities_dict)
+
+        # Create a DataFrame from list of dictionaries
+        abilities_df = pd.DataFrame(abilities_dicts, index=df.index)
+
+        # Concatenate the abilities df
+        df = pd.concat([df, abilities_df], axis=1)
+        df.drop(columns=["abilities"], inplace=True)
+    else:
+        print("'abilities' column is missing")
+    print("Shape after abilities:", df.shape)
+    print("Head after abilities:", df.head)
+
+    # One-hot encoding for 'combined_type' using pd.get_dummies
+    df = pd.get_dummies(df, columns=["combined_type"])
+    print("Shape after get dummies on combined type:", df.shape)
+    print("Head after get dummies on combined type:", df.head)
+
+    # One-hot encoding 'classfication' misspelt field and dropping original columns
+    df = pd.get_dummies(df, columns=["classfication"])
+    print("Shape after get dummies on classfication:", df.shape)
+    print("Head after get dummies on classfication:", df.head)
+
+    df.drop(
+        columns=["japanese_name", "name", "base_total", "type1", "type2"], inplace=True
+    )
+    print("Shape after drop final columns:", df.shape)
+    print("Head after drop final columns:", df.head)
+
+    print("✅ Datas are cleaned")
 
     return df
 
+
 def get_data_with_cache(
-        gcp_project:str,
-        query:str,
-        cache_path:Path,
-        data_has_header=True
-    ) -> pd.DataFrame:
+    gcp_project: str, query: str, cache_path: Path, data_has_header=True
+) -> pd.DataFrame:
     """
     Retrieve `query` data from BigQuery, or from `cache_path` if the file exists
     Store at `cache_path` if retrieved from BigQuery for future use
     """
     if cache_path.is_file():
         print(Fore.BLUE + "\nLoad data from local CSV..." + Style.RESET_ALL)
-        df = pd.read_csv(cache_path, header='infer' if data_has_header else None)
+        df = pd.read_csv(cache_path, header="infer" if data_has_header else None)
     else:
         print(Fore.BLUE + "\nLoad data from BigQuery server..." + Style.RESET_ALL)
         client = bigquery.Client(project=gcp_project)
@@ -66,13 +124,10 @@ def get_data_with_cache(
 
     return df
 
+
 def load_data_to_bq(
-        data: pd.DataFrame,
-        gcp_project:str,
-        bq_dataset:str,
-        table: str,
-        truncate: bool
-    ) -> None:
+    data: pd.DataFrame, gcp_project: str, bq_dataset: str, table: str, truncate: bool
+) -> None:
     """
     - Save the DataFrame to BigQuery
     - Empty the table beforehand if `truncate` is True, append otherwise
@@ -80,7 +135,9 @@ def load_data_to_bq(
 
     assert isinstance(data, pd.DataFrame)
     full_table_name = f"{gcp_project}.{bq_dataset}.{table}"
-    print(Fore.BLUE + f"\nSave data to BigQuery @ {full_table_name}...:" + Style.RESET_ALL)
+    print(
+        Fore.BLUE + f"\nSave data to BigQuery @ {full_table_name}...:" + Style.RESET_ALL
+    )
 
     # Load data onto full_table_name
 
@@ -91,7 +148,12 @@ def load_data_to_bq(
 
     # TODO: simplify this solution if possible, but students may very well choose another way to do it
     # We don't test directly against their own BQ tables, but only the result of their query
-    data.columns = [f"_{column}" if not str(column)[0].isalpha() and not str(column)[0] == "_" else str(column) for column in data.columns]
+    data.columns = [
+        f"_{column}"
+        if not str(column)[0].isalpha() and not str(column)[0] == "_"
+        else str(column)
+        for column in data.columns
+    ]
 
     client = bigquery.Client()
 
@@ -99,7 +161,9 @@ def load_data_to_bq(
     write_mode = "WRITE_TRUNCATE" if truncate else "WRITE_APPEND"
     job_config = bigquery.LoadJobConfig(write_disposition=write_mode)
 
-    print(f"\n{'Write' if truncate else 'Append'} {full_table_name} ({data.shape[0]} rows)")
+    print(
+        f"\n{'Write' if truncate else 'Append'} {full_table_name} ({data.shape[0]} rows)"
+    )
 
     # Load data
     job = client.load_table_from_dataframe(data, full_table_name, job_config=job_config)

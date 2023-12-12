@@ -5,93 +5,97 @@ from colorama import Fore, Style
 from typing import Tuple
 
 # Timing the TF import
-print(Fore.BLUE + "\nLoading TensorFlow..." + Style.RESET_ALL)
+# print(Fore.BLUE + "\nLoading TensorFlow..." + Style.RESET_ALL)
+# start = time.perf_counter()
+
+# from tensorflow import keras
+# from keras import Model, Sequential, layers, regularizers, optimizers
+# from keras.callbacks import EarlyStopping
+
+# end = time.perf_counter()
+# print(f"\n✅ TensorFlow loaded ({round(end - start, 2)}s)")
+
+# Emile 11.12.2023
+print(Fore.BLUE + "\nLoading SciKit Learn..." + Style.RESET_ALL)
 start = time.perf_counter()
 
-from tensorflow import keras
-from keras import Model, Sequential, layers, regularizers, optimizers
-from keras.callbacks import EarlyStopping
+from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
+from sklearn.ensemble import (
+    RandomForestRegressor,
+    GradientBoostingRegressor,
+    StackingRegressor,
+)
+from sklearn.linear_model import LinearRegression, Ridge
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from sklearn.svm import SVR
+from sklearn.neighbors import KNeighborsRegressor
 
 end = time.perf_counter()
-print(f"\n✅ TensorFlow loaded ({round(end - start, 2)}s)")
+print(f"\n✅ SciKit Learn loaded ({round(end - start, 2)}s)")
 
 
-
-def initialize_model(input_shape: tuple) -> Model:
+def initialize_model(): # -> Model:
     """
-    Initialize the Neural Network with random weights
+    Initialize the Random Forest Regressor
     """
-    reg = regularizers.l1_l2(l2=0.005)
+    # Define base models for stacking
+    estimators = [
+        ("rf", RandomForestRegressor(random_state=random_state)),
+        ("gb", GradientBoostingRegressor(random_state=random_state)),
+        ("svr", SVR()),  # Support Vector Regressor
+        ("knn", KNeighborsRegressor()),  # K-Neighbors Regressor
+    ]
 
-    model = Sequential()
-    model.add(layers.Input(shape=input_shape))
-    model.add(layers.Dense(100, activation="relu", kernel_regularizer=reg))
-    model.add(layers.BatchNormalization(momentum=0.9))
-    model.add(layers.Dropout(rate=0.1))
-    model.add(layers.Dense(50, activation="relu"))
-    model.add(layers.BatchNormalization(momentum=0.9))  # use momentum=0 to only use statistic of the last seen minibatch in inference mode ("short memory"). Use 1 to average statistics of all seen batch during training histories.
-    model.add(layers.Dropout(rate=0.1))
-    model.add(layers.Dense(1, activation="linear"))
+    # Initialize Stacking Regressor with a meta-regressor
+    model = StackingRegressor(estimators=estimators, final_estimator=Ridge(alpha=1.0))
 
     print("✅ Model initialized")
 
     return model
 
 
-def compile_model(model: Model, learning_rate=0.0005) -> Model:
+# def compile_model(model: Model, learning_rate=0.0005) -> Model:
+def compile_model(model, learning_rate=0.0005):
     """
-    Compile the Neural Network
+    Compile the model
     """
-    optimizer = optimizers.Adam(learning_rate=learning_rate)
-    model.compile(loss="mean_squared_error", optimizer=optimizer, metrics=["mae"])
+    # optimizer = optimizers.Adam(learning_rate=learning_rate)
+    # model.compile(loss="mean_squared_error", optimizer=optimizer, metrics=["mae"])
 
     print("✅ Model compiled")
 
     return model
 
+
+# def train_model(
+#     model: Model, X: np.ndarray, y: np.ndarray, test_size=0.2, random_state=42
+# ) -> Tuple[Model, dict]:
 def train_model(
-        model: Model,
-        X: np.ndarray,
-        y: np.ndarray,
-        batch_size=256,
-        patience=2,
-        validation_data=None, # overrides validation_split
-        validation_split=0.3
-    ) -> Tuple[Model, dict]:
+    model, X: np.ndarray, y: np.ndarray, test_size=0.2, random_state=42
+):
     """
     Fit the model and return a tuple (fitted_model, history)
     """
     print(Fore.BLUE + "\nTraining model..." + Style.RESET_ALL)
 
-    es = EarlyStopping(
-        monitor="val_loss",
-        patience=patience,
-        restore_best_weights=True,
-        verbose=1
+    # Splitting the dataset into training and test sets
+    X_train, X_test, y_train, y_test = train_test_split(
+        X_scaled, y, test_size=test_size, random_state=random_state
     )
 
-    history = model.fit(
-        X,
-        y,
-        validation_data=validation_data,
-        validation_split=validation_split,
-        epochs=100,
-        batch_size=batch_size,
-        callbacks=[es],
-        verbose=0
-    )
+    # Train the model
+    history = model.fit(X, y)
 
-    print(f"✅ Model trained on {len(X)} rows with min val MAE: {round(np.min(history.history['val_mae']), 2)}")
+    print(
+        f"✅ Model trained on {len(X)} rows"
+        # f"✅ Model trained on {len(X)} rows with min val MAE: {round(np.min(history.history['val_mae']), 2)}"
+    )
 
     return model, history
 
 
-def evaluate_model(
-        model: Model,
-        X: np.ndarray,
-        y: np.ndarray,
-        batch_size=64
-    ) -> Tuple[Model, dict]:
+# def evaluate_model(model: Model, X: np.ndarray, y: np.ndarray) -> Tuple[Model, dict]:
+def evaluate_model(model, X: np.ndarray, y: np.ndarray):
     """
     Evaluate trained model performance on the dataset
     """
@@ -102,18 +106,23 @@ def evaluate_model(
         print(f"\n❌ No model to evaluate")
         return None
 
-    metrics = model.evaluate(
-        x=X,
-        y=y,
-        batch_size=batch_size,
-        verbose=0,
-        # callbacks=None,
-        return_dict=True
-    )
+    # Make predictions and evaluate
+    predictions = stack_reg.predict(X_test)
+    mse = mean_squared_error(y_test, predictions)
+    mae = mean_absolute_error(y_test, predictions)
+    r2 = r2_score(y_test, predictions)
 
-    loss = metrics["loss"]
-    mae = metrics["mae"]
+    # # Scoring the model
+    # model_score = model.score(X_test, y_test)
+    # print("Model Score on Test Data:", model_score)
 
-    print(f"✅ Model evaluated, MAE: {round(mae, 2)}")
+    # # For K-Fold Cross Validation
+    # metrics = cross_val_score(model, X, y, cv=5)
 
+    print(f"✅ Model evaluated - Metrics:")
+    print("Mean Squared Error:", mse)
+    print("Mean Absolute Error:", mae)
+    print("R-squared Score:", r2)
+
+    metrics = predictions
     return metrics
