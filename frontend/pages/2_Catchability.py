@@ -70,46 +70,73 @@ My PokéApp
 
 # Capture Rate
 with st.container(border=True):
-    st.markdown(
-        """
-    ### 🪤 You want to know the catchability of a Pokémon.
-    """
-    )
+    st.markdown("### 🪤 Work out the catchability of a Pokémon.")
 
+    # List of Pokémon names and image paths
+    pokemon_options = [
+        ("SUPERCASPICHU", "../../catchemall/frontend/images/predict-images/steel.png"),
+        ("PAUVCASPINOR", "../../catchemall/frontend/images/predict-images/dark.png"),
+        ("MOYENCASPOLO", "../../catchemall/frontend/images/predict-images/grass.png"),
+        ("LEGMOYENCASPO", "../../catchemall/frontend/images/predict-images/ghost.png"),
+        ("RANDOMCASPICHU", "../../catchemall/frontend/images/predict-images/poison.png"),
+        ("SUPERMORGANICA", "../../catchemall/frontend/images/predict-images/dragon.png")
+    ]
     # Emile 07.12.23 : Enable reset widgets
     if st.session_state.get("reset_btn"):
+        st.session_state['predict_selection_method_field'] = None
+        st.session_state['predict_selected_pokemon_name'] = None
         st.session_state["pokemon_name_field"] = ""
         st.session_state["pokemon_type_field"] = None
         st.session_state["number_input_field"] = 0
         st.session_state["is_legendary_radio"] = "Yes"
+        st.session_state["base total score"] = ""
+        st.session_state["predict_sp_defense_field"] = ""
+        st.session_state["predict_defense_field"] = ""
+        st.session_state["predict_hp_field"] = ""
+        st.session_state["predict_height_field"] = ""
+        st.session_state["predict_speed_field"] = ""
+        st.session_state["predict_weight_kg_field"] = ""
+        st.session_state["predict_attack_field"] = ""
+        st.session_state["predict_sp_attack_field"] = ""
+        st.session_state["predict_legendary_field"] = ""
+        st.session_state["pokemon_name_field"] = ""
         # st.session_state[""] = ""
     # if st.session_state.get("prompt_result"):
     #     st.session_state["catchability_field"] = result
 
-    # Parameters, input fields
-    col1, col2 = st.columns(2)
-    with col1:
-        pokemon_name = st.text_input("Pokémon's name:", key="pokemon_name_field")
-    with col2:
-        pokemon_type = st.selectbox(
-            "Type:",
-            POKEMON_TYPE_LIST,
-            index=None,
-            placeholder="Select a type...",
-            key="pokemon_type_field",
-        )
-        # st.write("You selected:", pokemon_type)
+    col1, col2, col3 = st.columns(3)
+    selection_method = st.radio("Choose your input method:", ("Select a Pokémon", "Enter attributes manually"), key="predict_selection_method_field_1")
 
-    col1, col2 = st.columns(2)
-    with col1:
-        hp = st.number_input("Numbers of HP:", key="number_input_field")
-    with col2:
-        is_legendary = (
-            st.radio(
-                "Is this Pokémon legendary ?", ("Yes", "No"), key="is_legendary_radio"
-            )
-            == "Yes"
-        )
+        # hp = st.number_input("Numbers of HP:", key="number_input_field")
+    if selection_method == "Select a Pokémon":
+        with col1:# Extract names for the dropdown
+            pokemon_names = [name for name, _ in pokemon_options]
+
+            # Selectbox to choose a Pokémon
+            selected_pokemon_name = st.selectbox("Choose a Pokémon:", pokemon_names, key='predict_selected_pokemon_name')
+        with col2:
+            # Find the selected Pokémon's image and display it
+            for name, img_path in pokemon_options:
+                if name == selected_pokemon_name:
+                    st.image(img_path, width=100)  # Adjust width as needed
+
+    elif selection_method == "Enter attributes manually":
+        with col1:
+            # selection_method = st.radio("Choose your input method:", ("Select a Pokémon", "Enter attributes manually"), key="predict_selection_method_field_2")
+            base_egg_steps = st.slider("Base Egg Steps", min_value=0, max_value=50000, value=20, step=100, key="predict_base_egg_steps_field")
+            hp = st.slider("HP", min_value=0, max_value=255, value=10, step=1, key="predict_hp_field")
+            base_total = st.slider("Base Total", min_value=180, max_value=780, value=10, step=1, key="predict_base_total_field")
+            sp_defense = st.slider("Special Defense", min_value=0, max_value=200, value=10, step=1, key="predict_sp_defense_field")
+        with col2:
+            attack = st.slider("Attack", min_value=180, max_value=780, value=10, step=1, key="predict_attack_field")
+            sp_attack = st.slider("Special Attack", min_value=0, max_value=200, value=10, step=1, key="predict_sp_attack_field")
+            defense = st.slider("Defense", min_value=0, max_value=250, value=10, step=1, key="predict_defense_field")
+            is_legendary = st.selectbox("Is Legendary", options=[0, 1], format_func=lambda x: "Yes" if x == 1 else "No", key="predict_legendary_field")
+        with col3:
+            speed = st.slider("Speed", min_value=0, max_value=200, value=10, step=1, key="predict_speed_field")
+            height_m = st.slider("Height (m)", min_value=0.0, max_value=10.0, value=0.1, step=0.1, key="predict_height_field")
+            weight_kg = st.slider("Weight (kg)", min_value=0.0, max_value=1000.0, value=1.0, step=0.1, key="predict_weight_kg_field")
+
 
     # Get results
     # --------------------------------------------------------
@@ -136,4 +163,3 @@ with st.container(border=True):
 
         # Emile 07.12.23 : Enable reset widgets
         st.button("Reset inputs", key="reset_btn")
-
