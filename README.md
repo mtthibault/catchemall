@@ -40,12 +40,12 @@ A custom model was constructed by integrating data augmentation layers, the ResN
 
 After that, a data preprocessing function utilizing ResNet50's preprocess_input was implemented. Additionally, early stopping and learning rate reduction callbacks were set up.
 
-In the end, the model was compiled with the Adam optimizer and categorical crossentropy loss. Training was executed on preprocessed datasets, with monitoring facilitated through early stopping and learning rate reduction.
+In the end, the model was compiled with the Adam optimizer and categorical crossentropy loss, and we used accuracy as our scoring metric in order to have the total number of accurate predictions among all the predictions that have been computer by our model. Training was executed on preprocessed datasets, with monitoring facilitated through early stopping and learning rate reduction.
 
 You can explore the notebooks for a more in-depth understanding of the model architecture, data preprocessing steps, and the training process.
 
 ### Conclusion, difficulties & improvements' ideas
-The model achieved a 40% accuracy on the validation dataset.
+The model achieved a 43% accuracy on the validation dataset.
 
 This indicates a need for improvement in the current classification approach:
 
@@ -54,7 +54,7 @@ This indicates a need for improvement in the current classification approach:
 
 - Moreover, some pokémons, like Klefki, pose challenges for the model as he doesn't have specific characteristics showing to which type he belongs to.
 
-<img src='https://www.pokepedia.fr/images/b/be/Trousselin-XY.png  width="250">
+<img src='https://www.pokepedia.fr/images/b/be/Trousselin-XY.png'  width="250">
 
 - Furthermore, the dataset exhibits an imbalance in the number of images per pokémon type, notably in types like Water that have much more pokémons in the Pokémon's Universe than Ghost types. To improve overall model performance, balancing the dataset by collecting more samples for underrepresented types or techniques like oversampling could lead to better results.
 
