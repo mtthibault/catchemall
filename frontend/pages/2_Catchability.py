@@ -34,17 +34,13 @@ POKEMON_TYPE_LIST = [
 ]
 
 
-# params = {"feature1": param1, "feature2": param2}  # 0 for Sunday, 1 for Monday, ...
-# response = requests.get(url, params=params)
 def call_api():
     # response = requests.get(url).json()
     response = requests.get(PREDICT_API_URL).json()
 
     print("Test API", response)
     print(f"Test API - {response['catchability']}")
-    # results = response[0]
-    # # print(f"Test API - {results['name']}: ({results['lat']}, {results['lon']})")
-    # api_results = results
+
     api_results = response["catchability"]
     return api_results
 
@@ -123,21 +119,10 @@ with st.container(border=True):
     col1, col2 = st.columns(2)
     with col1:
         if st.button("Compute the catchability", key="compute_btn"):
-            # capture_difficulty = calculate_capture_difficulty(pokemon_name, pokemon_type, hp, is_legendary)
-            # st.write(f"The catchability of {pokemon_name.capitalize()} is : {capture_difficulty}")
-
-            # st.write(f"Name = {pokemon_name.capitalize()}, Type = {pokemon_type}")
-
-            # result = 77
-            # st.session_state["catchability_field"] = result
-            # display_results(255)
 
             results = call_api()  # >> OK
-            # catch_value = results["lat"]
             catch_value = results
 
-            # st.text(f"{results['name']}: ({results['lat']}, {results['lon']})")
-            # st.write(f"Catchability is {results['lat']}")
             st.write("**The higher, the easier**")
             st.slider(
                 "Catch slider label",
@@ -152,7 +137,3 @@ with st.container(border=True):
         # Emile 07.12.23 : Enable reset widgets
         st.button("Reset inputs", key="reset_btn")
 
-    # with col2:
-    #     catchability = st.text_input("Catchability:", key="catchability_field")
-
-    # results_display = st.text_input("Results:", key="result_field")
