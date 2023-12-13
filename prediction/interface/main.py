@@ -7,6 +7,7 @@ from dateutil.parser import parse
 
 from prediction.params import *
 from prediction.ml_logic.data import get_data_with_cache, clean_data, load_data_to_bq
+from prediction.ml_logic.encoders import encode_features
 from prediction.ml_logic.model import (
     initialize_model,
     compile_model,
@@ -33,7 +34,7 @@ def preprocess() -> None:
     query = f"""
         SELECT {",".join(COLUMN_NAMES_RAW)}
         FROM {GCP_PROJECT_WAGON}.{BQ_DATASET}.raw_{DATA_SIZE}
-        ORDER BY pickup_datetime
+        # ORDER BY pickup_datetime
     """
 
     # Retrieve data using `get_data_with_cache`
@@ -52,17 +53,24 @@ def preprocess() -> None:
     data_clean = clean_data(data_query)
 
     # ???
+    print("Processing data ...")
     X = data_clean.drop("catchability", axis=1)
     y = data_clean[["catchability"]]
 
-    X_processed = preprocess_features(X)
+    X_processed = encode_features(X)
+    print("X_processed.head()")
+    print(X_processed.head())
     # X_processed, my_fitted_scaler = preprocess_features(X)
 
     # Emile
     #  suavegarder vers
+    data_processed_cache_path = Path(LOCAL_DATA_PATH).joinpath(
+        "processed", f"processed_{CATCH_PREDICT_CSV_FILE}"
+    )
+    X_processed.to_csv(data_processed_cache_path)
 
-    # # Load a DataFrame onto BigQuery containing [pickup_datetime, X_processed, y]
-    # # using data.load_data_to_bq()
+    # Load a DataFrame onto BigQuery containing [pickup_datetime, X_processed, y]
+    # using data.load_data_to_bq()
     # data_processed_with_timestamp = pd.DataFrame(
     #     np.concatenate(
     #         (
@@ -75,7 +83,7 @@ def preprocess() -> None:
     # )
 
     # load_data_to_bq(
-    #     data_processed_with_timestamp,
+        # data_processed_with_timestamp,
     #     gcp_project=GCP_PROJECT,
     #     bq_dataset=BQ_DATASET,
     #     table=f"processed_{DATA_SIZE}",
@@ -121,20 +129,20 @@ def train(test_size=0.2, random_state=42) -> float:
     if data_processed.shape[0] < 10:
         print("❌ Not enough processed data retrieved to train on")
         return None
-
+    split_ratio = 0.2
     # Create (X_train_processed, y_train, X_val_processed, y_val)
-    # train_length = int(len(data_processed) * (1 - split_ratio))
+    train_length = int(len(data_processed) * (1 - split_ratio))
 
-    # data_processed_train = (
-    #     data_processed.iloc[:train_length, :].sample(frac=1).to_numpy()
-    # )
-    # data_processed_val = data_processed.iloc[train_length:, :].sample(frac=1).to_numpy()
+    data_processed_train = (
+        data_processed.iloc[:train_length, :].sample(frac=1).to_numpy()
+    )
+    data_processed_val = data_processed.iloc[train_length:, :].sample(frac=1).to_numpy()
 
-    # X_train_processed = data_processed_train[:, :-1]
-    # y_train = data_processed_train[:, -1]
+    X_train_processed = data_processed_train[:, :-1]
+    y_train = data_processed_train[:, -1]
 
-    # X_val_processed = data_processed_val[:, :-1]
-    # y_val = data_processed_val[:, -1]
+    X_val_processed = data_processed_val[:, :-1]
+    y_val = data_processed_val[:, -1]
 
     # Train model using `model.py`
     model = load_model()
@@ -241,26 +249,26 @@ def pred(X_pred: pd.DataFrame = None) -> np.ndarray:
 
     print("\n⭐️ Use case: predict")
 
-    if X_pred is None:
-        X_pred = pd.DataFrame(
-            dict(
-                pickup_datetime=[pd.Timestamp("2013-07-06 17:18:00", tz="UTC")],
-                pickup_longitude=[-73.950655],
-                pickup_latitude=[40.783282],
-                dropoff_longitude=[-73.984365],
-                dropoff_latitude=[40.769802],
-                passenger_count=[1],
-            )
-        )
+    # if X_pred is None:
+    #     X_pred = pd.DataFrame(
+    #         dict(
+    #             pickup_datetime=[pd.Timestamp("2013-07-06 17:18:00", tz="UTC")],
+    #             pickup_longitude=[-73.950655],
+    #             pickup_latitude=[40.783282],
+    #             dropoff_longitude=[-73.984365],
+    #             dropoff_latitude=[40.769802],
+    #             passenger_count=[1],
+    #         )
+    #     )
 
-    model = load_model()
-    assert model is not None
+    # model = load_model()
+    # assert model is not None
 
-    X_processed = preprocess_features(X_pred)
-    y_pred = model.predict(X_processed)
+    # X_processed = preprocess_features(X_pred)
+    # y_pred = model.predict(X_processed)
 
-    print("\n✅ prediction done: ", y_pred, y_pred.shape, "\n")
-    return y_pred
+    # print("\n✅ prediction done: ", y_pred, y_pred.shape, "\n")
+    # return y_pred
 
 
 if __name__ == "__main__":
