@@ -43,6 +43,7 @@ CATCH_PREDICT_CSV_FILE = os.environ.get("CATCH_PREDICT_CSV_FILE")
 LOCAL_DATA_PATH = os.path.join(
     os.path.expanduser("~"), "code", "mtthibault", "catchemall", "raw_data"
 )
+
 LOCAL_REGISTRY_PATH = os.path.join(
     os.path.expanduser("~"),
     "code",
@@ -51,6 +52,7 @@ LOCAL_REGISTRY_PATH = os.path.join(
     "raw_data",
     "training_outputs",
 )
+
 # Types of Pokemon
 POKEMON_TYPE_LIST = [
     "Bug",
@@ -72,6 +74,27 @@ POKEMON_TYPE_LIST = [
     "Steel",
     "Water",
 ]
+
+
+# Emile 12.12.2023
+# For testing
+URL_IMG_GRASS = "https://archives.bulbagarden.net/media/upload/0/0c/0810Grookey.png"
+# global URL_IMG_GRASS
+# URL_IMG_GRASS = "Grookey.png"
+
+URL_IMG_FIREBUG = (
+    "https://archives.bulbagarden.net/media/upload/8/83/0851Centiskorch.png"
+)
+URL_IMG_GRASSPSYCHIC = (
+    "https://archives.bulbagarden.net/media/upload/8/80/1010Iron_Leaves.png"
+)
+URL_IMG_NORMALFLYING = (
+    "https://archives.bulbagarden.net/media/upload/b/b3/HOME0931W.png"
+)
+
+# CNN : size of images
+TARGET_SIZE = (120, 120)
+
 
 # Emile 05.12.23
 # Temporaire pour compatibilité avec taxifare

@@ -3,11 +3,19 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # Emile
-import random # for generating random catchability
+import random  # for generating random catchability
 from prediction.ml_logic.preprocessor import preprocess_features
 from prediction.ml_logic.registry import load_model  # , save_model, save_results
 
 # import json # >> pas utile ici
+
+# Emile 12.12.2023
+from prediction.params import *
+print("CATCH_PREDICT_CSV_FILE", CATCH_PREDICT_CSV_FILE)
+print("POKEMON_TYPE_LIST", POKEMON_TYPE_LIST)
+print("TARGET_SIZE", TARGET_SIZE)
+print("URL_IMG_GRASS", URL_IMG_GRASS)
+from prediction.img_logic.predict_type import *
 
 
 app = FastAPI()
@@ -22,7 +30,35 @@ app.add_middleware(
 )
 
 
+# predicts from url provided by user
+@app.get("/predict_url")
+def predict():
+    # predictImage(GRASS, loaded_model)
+    return {"Cath'em All": "get /predict_url"}
+
+
+# def prediction(url_with_pic, model_type="inception_v3"):
+#     model = app.state.model
+#     assert model is not None
+#     prediction = predict.predict_labels(model, model_type, url_with_pic=url_with_pic)
+#     return prediction
+
+
+# predicts from file provided by user
+@app.post("/predict_file")
+def predict():
+    return {"Cath'em All": "post /predict_file"}
+
+
+# def prediction(file: UploadFile, model_type="inception_v3"):
+#     model = app.state.model
+#     assert model is not None
+#     prediction = predict.predict_labels(model, model_type, img=file.file)
+#     return prediction
+
+
 # http://127.0.0.1:8000/predict?pickup_datetime=2012-10-06 12:10:20&pickup_longitude=40.7614327&pickup_latitude=-73.9798156&dropoff_longitude=40.6513111&dropoff_latitude=-73.8803331&passenger_count=2
+#  Emile passer à predict_catch ?
 @app.get("/predict")
 def predict(feature_1: int = 100, fetaure_2: int = 20):
     """
@@ -86,4 +122,4 @@ def predict(feature_1: int = 100, fetaure_2: int = 20):
 
 @app.get("/")
 def root():
-    return {"Cath'em All": "Hello !!!"}
+    return {"Cath'em All": "Hello !"}
