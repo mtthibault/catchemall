@@ -3,8 +3,9 @@ import pandas as pd
 from google.cloud import bigquery
 from colorama import Fore, Style
 from pathlib import Path
-
+import pickle
 from prediction.params import *
+from sklearn.preprocessing import OneHotEncoder, MultiLabelBinarizer
 
 # Emile 11.12.2023
 import ast
@@ -18,83 +19,32 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     """
     # Emile 11.12.2023
 
-    print("Initial Shape:", df.shape)
+    # Drop unnecessary columns
+    df = df.drop(columns=['japanese_name', 'name'])
 
     # Fill missing values
-    if "height_m" in df.columns:
-        df["height_m"].fillna(df["height_m"].median(), inplace=True)
-    if "weight_kg" in df.columns:
-        df["weight_kg"].fillna(df["weight_kg"].median(), inplace=True)
-
-    # Drop columns
-    columns_to_drop = ["percentage_male"]
-    df = df.drop(columns=[col for col in columns_to_drop if col in df.columns])
-    print("After dropping columns:", df.shape)
-    print("After dropping columns:", df.head())
-
-    # Convert 'capture_rate' to numeric and create 'catchability'
-    df["capture_rate"] = pd.to_numeric(df["capture_rate"], errors="coerce")
-    df["catchability"] = df["capture_rate"] / 2.55
-    df = df.dropna(subset=["catchability"])
-    print("After capture rate conversion to catchability:", df.shape)
-
-    df = df.drop(columns=["capture_rate"])
-    # Check shape after dropping columns
-    print("Shape after dropping capture rate:", df.shape)
-    print(" Head after dropping capture rate:", df.head())
-
-    # Handle 'type2' and create 'combined_type'
-    df["type2"].fillna("None", inplace=True)
-    df["combined_type"] = df["type1"] + "_" + df["type2"]
-
-    # Check shape after creating combined type
-    print("Shape after combined type:", df.shape)
-    print("Head after combined type:", df.head)
-
-    # Handle 'abilities'
-    if "abilities" in df.columns:
-        # Convert string representation of list to actual list
-        df["abilities"] = df["abilities"].apply(ast.literal_eval)
-
-        # Collect all unique abilities from the dfset
-        all_abilities = set().union(*df["abilities"])
-
-        # Prepare df for new DataFrame
-        abilities_dicts = []
-        for index, row in df.iterrows():
-            abilities_dict = {
-                ability: int(ability in row["abilities"]) for ability in all_abilities
-            }
-            abilities_dicts.append(abilities_dict)
-
-        # Create a DataFrame from list of dictionaries
-        abilities_df = pd.DataFrame(abilities_dicts, index=df.index)
-
-        # Concatenate the abilities df
-        df = pd.concat([df, abilities_df], axis=1)
-        df.drop(columns=["abilities"], inplace=True)
-    else:
-        print("'abilities' column is missing")
-    print("Shape after abilities:", df.shape)
-    print("Head after abilities:", df.head)
-
-    # One-hot encoding for 'combined_type' using pd.get_dummies
-    df = pd.get_dummies(df, columns=["combined_type"])
-    print("Shape after get dummies on combined type:", df.shape)
-    print("Head after get dummies on combined type:", df.head)
-
-    # One-hot encoding 'classfication' misspelt field and dropping original columns
-    df = pd.get_dummies(df, columns=["classfication"])
-    print("Shape after get dummies on classfication:", df.shape)
-    print("Head after get dummies on classfication:", df.head)
-
-    df.drop(
-        columns=["japanese_name", "name", "base_total", "type1", "type2"], inplace=True
-    )
+    df['height_m'] = df['height_m'].fillna(df['height_m'].median())
+    df['weight_kg'] = df['weight_kg'].fillna(df['weight_kg'].median())
+    df['type1'].fillna('None', inplace=True)
+    df['type2'].fillna('None', inplace=True)
+    df['abilities'].fillna('None', inplace=True)
+    df['classfication'].fillna('None', inplace=True)
+    # Create the new column 'catchability'
+    df['catchability'] = df['capture_rate'] / 2.55
+    # Check for missing values in catchability
+    missing_catchability = df['catchability'].isnull().sum()
+    print(f"Missing values in catchability: {missing_catchability}")
+    # Remove rows where catchability is NaN
+    df = df.dropna(subset=['catchability'])
+    # Check again for missing values
+    missing_catchability = df['catchability'].isnull().sum()
+    print(f"Missing values in catchability after removal: {missing_catchability}")
+    # Drop unnecessary columns
+    df = df.drop(columns=['capture_rate'])
     print("Shape after drop final columns:", df.shape)
     print("Head after drop final columns:", df.head)
 
-    print("✅ Datas are cleaned")
+    print("✅ Data cleaned")
 
     return df
 
@@ -132,7 +82,7 @@ def load_data_to_bq(
     - Save the DataFrame to BigQuery
     - Empty the table beforehand if `truncate` is True, append otherwise
     """
-
+    print("DATA HERE")
     assert isinstance(data, pd.DataFrame)
     full_table_name = f"{gcp_project}.{bq_dataset}.{table}"
     print(

@@ -210,19 +210,19 @@ def mlflow_run(func):
         - context (str, optional): Param describing the context of the run. Defaults to "Train".
     """
 
-    # def wrapper(*args, **kwargs):
-    #     mlflow.end_run()
-    #     mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
-    #     mlflow.set_experiment(experiment_name=MLFLOW_EXPERIMENT)
+    def wrapper(*args, **kwargs):
+        # mlflow.end_run()
+        # mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+        # mlflow.set_experiment(experiment_name=MLFLOW_EXPERIMENT)
 
-    #     with mlflow.start_run():
-    #         mlflow.tensorflow.autolog()
-    #         results = func(*args, **kwargs)
+        # with mlflow.start_run():
+        #     mlflow.tensorflow.autolog()
+        #     results = func(*args, **kwargs)
 
-    # print("✅ registry.mlflow_run auto-log done")
+        print("✅ registry.mlflow_run auto-log done")
+        results = func(*args, **kwargs)
 
-    # return results
-    # return wrapper
+        return results
+    return wrapper
 
     print("✅ registry.mlflow_run auto-log done")
-    return None
