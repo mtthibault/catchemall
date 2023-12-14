@@ -4,6 +4,7 @@ import PIL
 from PIL import Image
 from pathlib import Path
 import os
+import numpy as np
 
 from tensorflow.keras.preprocessing.image import img_to_array
 import numpy as np
@@ -38,25 +39,9 @@ print("CNN_TRAINED_MODEL", CNN_TRAINED_MODEL)
 # *********************************************************
 # Preload the model
 # *********************************************************
-# app.state.model = registry.load_selected_model() # doggos
-
-#  taxifare
-# app.state.model = load_model()
-# y_pred = app.state.model.predict(X_pred_processed)
-
-# loaded_model = load_model("resnet_v3.keras")
-# model_cache_path = Path(f"{LOCAL_DATA_PATH}/computer_vision/models/resnet_v3.keras")
 model_path = os.path.join(
     LOCAL_DATA_PATH, "computer_vision", "models", CNN_TRAINED_MODEL
 )
-# print("model_cache_path", model_cache_path)
-
-# print("model_path", model_path)
-
-# print(f"✅ Load model: {model_path}")
-
-# loaded_model = load_model(model_path)
-# print(f"... >>> {loaded_model}")
 
 
 # Emile 13.12.2023
@@ -67,14 +52,19 @@ def getImage(source):
     # upload image
     # if type(source) == PIL.Image.Image:
     if not isinstance(source, str):
+        # print("... 1. if not isinstance", source)
+        # print(source.size, source.format, source.mode)
+        # print(np.asarray(source))
         img = source
 
     # chemin image
     elif os.path.exists(source):
+        # print("...  2. elif os.path.exists")
         img = Image.open(source)
 
     # url image
     else:
+        # print("... 3 else")
         response = requests.get(source)
         img = Image.open(BytesIO(response.content))
 
@@ -103,9 +93,6 @@ def predictImage(source, model):
     """
     Predict type from an image, with a model.
     """
-
-    # Test
-    # url = URL_IMG_FIREBUG
 
     # Test local => POKEMON_TYPE_LIST
     # types = train_ds.class_names
@@ -145,9 +132,6 @@ def predictImage(source, model):
     print(
         f"Third predicted type: {POKEMON_TYPE_LIST[predicted_index_3]}: {predicted_proba_3}%"
     )
-    # print(f"First predicted type: {types[predicted_index_1]}: {predicted_proba_1}%")
-    # print(f"Second predicted type: {types[predicted_index_2]}: {predicted_proba_2}%")
-    # print(f"Third predicted type: {types[predicted_index_3]}: {predicted_proba_3}%")
 
     # Build dict as api result
     keys_list = [
@@ -177,69 +161,36 @@ def predictImage(source, model):
     return res_dict
 
 
-# def compile_model(model):
-#     """
-#     Compile the model.
-#     Args:
-#         model: the model to compile
-#     Returns:
-#         model: the compiled model
-#     """
-#     opt = optimizers.Adam(learning_rate=1e-4)
-#     model.compile(optimizer=opt, loss="categorical_crossentropy", metrics=["accuracy"])
-#     print("✅ Model compiled")
-#     return model
-
-
-# def predict_labels(model, model_type, *args, **kwargs):
-#     """
-#     Function that will load the latest model from local disk and use it to predict the breed of the dog in the image.
-#     Args:
-#         url: url of the image to predict
-#     Returns:
-#         breed_prediction: dictionary with the top 3 breeds predicted
-#         score_prediction: dictionary with the top 3 scores predicted
-#     """
-#     img = getImage(*args, **kwargs)
-#     print("✅ Image successfully loaded")
-#     img = img_to_array(img)  # shape = (224, 224, 3)
-#     img = img.reshape((-1, 224, 224, 3))
-#     print("✅ Image successfully reshaped", img.shape)
-
-#     model = compile_model(model)
-#     print("✅ Model successfully loaded and compiled")
-
-#     if model_type == "resnet50":
-#         img = resnet_preprocess_input(img)
-#         print("✅ Image successfully preprocessed (resnet50)")
-#     elif model_type == "inception_v3":
-#         img = inception_preprocess_input(img)
-#         print("✅ Image successfully preprocessed (inception_v3)")
-#     print("✅ Predicting breed...")
-
-#     res = model.predict(img)
-#     print("✅ Breed predicted")
-#     indexes = np.argsort(res)[0][-3:][::-1]
-#     predicts = np.sort(res)[0][::-1][0:3]
-
-#     breed_prediction = {
-#         "first": breed[indexes[0]],
-#         "second": breed[indexes[1]],
-#         "third": breed[indexes[2]],
-#     }
-#     score_prediction = {
-#         "first": float(round(predicts[0], 2)),
-#         "second": float(round(predicts[1], 2)),
-#         "third": float(round(predicts[2], 2)),
-#     }
-#     output = {"prediction": breed_prediction, "score": score_prediction}
-#     return output
-
 # Emile Test local 13.12.2023
-# predictImage(URL_IMG_NORMALFLYING, loaded_model)
+if __name__ == "__main__":
 
-file_path = os.path.join(LOCAL_DATA_PATH, "computer_vision", "vivillon.png")
-# predictImage(file_path, loaded_model)
+    model_path = Path(
+        "/home/emile/code/mtthibault/catchemall/raw_data/computer_vision/models/final_resnet_h5.h5"
+    )
+    # model_path = os.path.join(
+    #     LOCAL_DATA_PATH, "computer_vision", "models", CNN_TRAINED_MODEL
+    # )
+    # print("model_cache_path", model_cache_path)
 
-# file_path = os.path.join(LOCAL_DATA_PATH, "computer_vision", "Abra_4750.png")
-# predictImage(file_path, loaded_model)
+    print("model_path", model_path)
+
+    print(f"✅ Load model: {model_path}")
+
+    loaded_model = load_model(model_path)
+    print(f"... >>> {loaded_model}")
+
+    # predictImage(URL_IMG_NORMALFLYING, loaded_model)
+    URL_TEST = "https://www.pokepedia.fr/images/f/f2/L%C3%A9viator-RFVF.png"
+    predictImage(URL_TEST, loaded_model)
+
+    print(".... fichier ....")
+    file_path = (
+        "/home/emile/code/mtthibault/catchemall/raw_data/computer_vision/leviator-RFVF.png"
+    )
+    predictImage(file_path, loaded_model)
+
+    # file_path = os.path.join(LOCAL_DATA_PATH, "computer_vision", "vivillon.png")
+    # predictImage(file_path, loaded_model)
+
+    # file_path = os.path.join(LOCAL_DATA_PATH, "computer_vision", "Abra_4750.png")
+    # predictImage(file_path, loaded_model)

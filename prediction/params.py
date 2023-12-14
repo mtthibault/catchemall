@@ -43,9 +43,7 @@ CATCH_PREDICT_CSV_FILE = os.environ.get("CATCH_PREDICT_CSV_FILE")
 
 PACKAGE_PATH = os.path.dirname(os.path.dirname(__file__))
 
-LOCAL_DATA_PATH = os.path.join(
-    PACKAGE_PATH, "raw_data"
-)
+LOCAL_DATA_PATH = os.path.join(PACKAGE_PATH, "raw_data")
 
 
 LOCAL_REGISTRY_PATH = os.path.join(
@@ -98,7 +96,8 @@ URL_IMG_NORMALFLYING = (
 
 # CNN : size of images
 TARGET_SIZE = (120, 120)
-CNN_TRAINED_MODEL = "final_resnet_h5.h5"
+# CNN_TRAINED_MODEL = "final_resnet_h5.h5"
+CNN_TRAINED_MODEL = "final_resnet_keras.keras"
 
 # Emile 05.12.23
 # Temporaire pour compatibilité avec taxifare

@@ -28,4 +28,9 @@ COPY Makefile Makefile
 
 # Web app settings, 8080 for GCP
 # ---------------------------------------------------------
-CMD streamlit run Home.py --server.port 8080 --server.address=0.0.0.0
+# Avant
+# CMD streamlit run Home.py --server.port 8080 --server.address=0.0.0.0
+
+# Après via Jules
+EXPOSE 8080
+CMD streamlit run --server.port 8080 --browser.serverAddress 0.0.0.0 --server.enableCORS False --server.enableXsrfProtection False Home.py
