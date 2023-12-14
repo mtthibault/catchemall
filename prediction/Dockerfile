@@ -1,7 +1,9 @@
 # Base layer
-# for scikit learn
-FROM python:3.10-slim-buster
-# FROM tensorflow/tensorflow:2.10.0
+# for scikit learn regression only
+# FROM python:3.10-slim-buster
+
+# Base layer for regression and CNN
+FROM tensorflow/tensorflow:2.10.0
 # Emile 12.12.2023 : Plan B
 # FROM tensorflow/tensorflow:2.15.0
 
@@ -10,7 +12,10 @@ WORKDIR /app
 # First, pip install dependencies
 # ---------------------------------------------------------
 # COPY requirements.txt requirements.txt # local
-COPY prediction/pr_requirements.txt requirements.txt
+# For regression only
+# COPY prediction/pr_requirements.txt requirements.txt
+# For regression and CNN
+COPY requirements_prod.txt requirements.txt
 
 # Installing the requirements, dependencies of our packages
 RUN pip install --upgrade pip

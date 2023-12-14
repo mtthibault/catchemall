@@ -105,3 +105,8 @@ reset_gcs_files:
 
 reset_all_files: reset_local_files reset_bq_files reset_gcs_files
 
+docker_run:
+	docker run -e PORT=8000 -p 8080:8000 --env-file .env $(PREDICT_IMAGE):dev
+
+webapp_run:
+	streamlit run Home.py
