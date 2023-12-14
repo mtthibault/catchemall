@@ -67,7 +67,7 @@ My PokéApp
 )
 
 # Capture Rate
-with st.container(border=True):
+with st.container():
     st.markdown("### 🪤 Work out the catchability of a Pokémon.")
 
     # List of Pokémon names and image paths
