@@ -96,8 +96,8 @@ URL_IMG_NORMALFLYING = (
 
 # CNN : size of images
 TARGET_SIZE = (120, 120)
-# CNN_TRAINED_MODEL = "final_resnet_h5.h5"
-CNN_TRAINED_MODEL = "final_resnet_keras.keras"
+CNN_TRAINED_MODEL = "final_resnet_h5.h5"
+# CNN_TRAINED_MODEL = "final_resnet_keras.keras"
 
 # Emile 05.12.23
 # Temporaire pour compatibilité avec taxifare
