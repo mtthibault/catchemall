@@ -9,7 +9,7 @@ from joblib import load
 from prediction.params import LOCAL_DATA_PATH
 
 MODEL_DATA_PATH = os.path.join(
-    LOCAL_DATA_PATH, "prediction"
+    LOCAL_DATA_PATH, "prediction", "regression"
 )
 
 
@@ -44,7 +44,6 @@ def encode_features(df):
     abilities_encoded = mlb_abilities.fit_transform(df['abilities'].apply(lambda x: x.strip("[]").replace("'", "").split(", ")))
     type1_encoded = ohe_type1.fit_transform(df[['type1']])
     type2_encoded = ohe_type2.fit_transform(df[['type2']])
-
 
     # Save the fitted encoders using pickle
     with open(os.path.join(MODEL_DATA_PATH, 'ohe_classification.pkl'), 'wb') as f:
@@ -140,7 +139,7 @@ def predict_catchability(
 
 
 if __name__=='__main__':
-    # Example usage
+
     # Example input values
     base_total = 10  # Example value
     attack = 10       # Example value
