@@ -100,8 +100,7 @@ async def receive_image(img: UploadFile = File(...)):
     ### Receiving and decoding the image
     contents = await img.read()
 
-    nparr = np.fromstring(contents, np.uint8)
-    img_decode = Image.fromarray(nparr)
+    img_decode = Image.open(io.BytesIO(contents))
 
     print("✅ post /predict_file: from source")
     predict_types_result = predictImage(img_decode, app.state.model)
