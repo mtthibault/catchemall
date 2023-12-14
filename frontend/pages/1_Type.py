@@ -46,7 +46,7 @@ My PokéApp
 )
 
 # Pokémon Type
-with st.container(border=True):
+with st.container():
     st.markdown(
         """
     ### 🩻 You want to know the type of a Pokémon.

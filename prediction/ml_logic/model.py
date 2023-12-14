@@ -1,5 +1,6 @@
 import numpy as np
 import time
+import pandas as pd
 
 from colorama import Fore, Style
 from typing import Tuple
@@ -34,21 +35,25 @@ end = time.perf_counter()
 print(f"\n✅ SciKit Learn loaded ({round(end - start, 2)}s)")
 
 
-def initialize_model(): # -> Model:
+def initialize_model():  # -> Model:
     """
     Initialize the Random Forest Regressor
     """
+    print("Start initialise model")
+
     # Define base models for stacking
-    estimators = [
-        ("rf", RandomForestRegressor(random_state=random_state)),
-        ("gb", GradientBoostingRegressor(random_state=random_state)),
-        ("svr", SVR()),  # Support Vector Regressor
-        ("knn", KNeighborsRegressor()),  # K-Neighbors Regressor
-    ]
+    estimators = [('rf', RandomForestRegressor(n_estimators=250,
+                                               max_depth=25,
+                                               min_samples_split=5,
+                                               random_state=42)),
+                  ('gb', GradientBoostingRegressor(random_state=42)),
+                  ('svr', SVR()),  # Support Vector Regressor
+                  ('knn', KNeighborsRegressor())  # K-Neighbors Regressor
+]
 
     # Initialize Stacking Regressor with a meta-regressor
     model = StackingRegressor(estimators=estimators, final_estimator=Ridge(alpha=1.0))
-
+    model
     print("✅ Model initialized")
 
     return model
@@ -78,17 +83,14 @@ def train_model(
     """
     print(Fore.BLUE + "\nTraining model..." + Style.RESET_ALL)
 
-    # Splitting the dataset into training and test sets
-    X_train, X_test, y_train, y_test = train_test_split(
-        X_scaled, y, test_size=test_size, random_state=random_state
-    )
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Train the model
-    history = model.fit(X, y)
+    history = model.fit(X_train, y_train)
 
     print(
-        f"✅ Model trained on {len(X)} rows"
-        # f"✅ Model trained on {len(X)} rows with min val MAE: {round(np.min(history.history['val_mae']), 2)}"
+        f"✅ Model trained on {len(X_train)} rows"
+        # f"✅ Model trained on {len(X_train)} rows with min val MAE: {round(np.min(history.history['val_mae']), 2)}"
     )
 
     return model, history
@@ -107,7 +109,7 @@ def evaluate_model(model, X: np.ndarray, y: np.ndarray):
         return None
 
     # Make predictions and evaluate
-    predictions = stack_reg.predict(X_test)
+    predictions = model.predict(X_test)
     mse = mean_squared_error(y_test, predictions)
     mae = mean_absolute_error(y_test, predictions)
     r2 = r2_score(y_test, predictions)
