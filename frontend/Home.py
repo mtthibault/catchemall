@@ -2,11 +2,6 @@ import streamlit as st
 import requests
 from PIL import Image
 
-# Importer mes fonctions
-#def get_pokemon_type_from_image
-#def get_pokemon_capture_rate
-#def get_pokemon_evolutions
-
 st.set_page_config(
     page_title="My PokéApp",
     page_icon="🦈",
@@ -26,14 +21,17 @@ st.title('''
 My PokéApp
 ''')
 
+## Caption
+st.caption('This webapp is part of our project for Le Wagon, Batch #1437. ✨')
+
 col1, col2 = st.columns(2)
 
 with col1:
     # Titre
-    st.markdown('''Greetings, **Pokémon Trainers**! 🎉''')
+    st.markdown('''Greetings, <span style="color:#FFA500; font-weight:bold">Pokémon Trainers</span>! 🎉''', unsafe_allow_html=True)
     st.markdown('''
-    We are thrilled to present **My PokéApp**, a powerful tool designed to **enhance your Pokémon journey** by providing insights beyond the capabilities of your traditional Pokédex. 🤖
-    ''')
+        We are thrilled to present <span style="color:#FFA500; font-weight:bold">My PokéApp</span>, a powerful tool designed to <span style="color:#FFA500; font-weight:bold">enhance your Pokémon journey</span> by providing insights beyond the capabilities of your traditional Pokédex. 🤖
+    ''', unsafe_allow_html=True)
 
 with col2:
     # GIF
@@ -44,8 +42,14 @@ with col2:
 # Description
 
 st.markdown('''
-Click one of the three buttons on the left to:
+Click one of the two buttons on the left to:
 ''')
-st.markdown(f"🩻 <u>Identify Pokémon Type from an Image:</u> Discover the elemental type of encountered Pokémon through **image analysis**.", unsafe_allow_html=True)
-st.markdown(f"🪤 <u>Predict Capture Difficulty:</u> Input Pokédex stats to calculate **capture difficulty**.", unsafe_allow_html=True)
-st.markdown(f"🐨 <u>Explore Evolutionary Family:</u> Input a Pokémon's name to unveil its **evolutionary family** and plan strategic team growth.", unsafe_allow_html=True)
+
+col1, col2 = st.columns(2)
+with col1:
+    st.markdown(f"🩻 **<u>Identify Pokémon Type from an Image</u>** \n\n"
+                f"Discover the elemental type of encountered Pokémon through <span style='color:#FFA500; font-weight:bold'>image analysis</span>.", unsafe_allow_html=True)
+
+with col2:
+    st.markdown(f"🪤 **<u>Predict Catchability</u>** \n\n"
+                f"Input Pokédex stats to calculate <span style='color:#FFA500; font-weight:bold'>capture difficulty</span>.", unsafe_allow_html=True)
