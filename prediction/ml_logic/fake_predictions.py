@@ -1,22 +1,17 @@
 import pandas as pd
 import numpy as np
 import pickle
-import streamlit as st
+import os
 
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.linear_model import LinearRegression
-from sklearn.svm import SVR
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import Pipeline
-from sklearn.impute import SimpleImputer
-from sklearn.feature_selection import RFECV
-from sklearn.ensemble import StackingRegressor, RandomForestRegressor, GradientBoostingRegressor
-from sklearn.linear_model import Ridge
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+
 from sklearn.preprocessing import OneHotEncoder, MultiLabelBinarizer
 from joblib import load
+from prediction.params import LOCAL_DATA_PATH
+
+MODEL_DATA_PATH = os.path.join(
+    LOCAL_DATA_PATH, "prediction"
+)
+
 
 def preprocess_pokemon_data(df):
 
@@ -50,14 +45,15 @@ def encode_features(df):
     type1_encoded = ohe_type1.fit_transform(df[['type1']])
     type2_encoded = ohe_type2.fit_transform(df[['type2']])
 
+
     # Save the fitted encoders using pickle
-    with open('ohe_classification.pkl', 'wb') as f:
+    with open(os.path.join(MODEL_DATA_PATH, 'ohe_classification.pkl'), 'wb') as f:
         pickle.dump(ohe_classification, f)
-    with open('mlb_abilities.pkl', 'wb') as f:
+    with open(os.path.join(MODEL_DATA_PATH, 'mlb_abilities.pkl'), 'wb') as f:
         pickle.dump(mlb_abilities, f)
-    with open('ohe_type1.pkl', 'wb') as f:
+    with open(os.path.join(MODEL_DATA_PATH, 'ohe_type1.pkl'), 'wb') as f:
         pickle.dump(ohe_type1, f)
-    with open('ohe_type2.pkl', 'wb') as f:
+    with open(os.path.join(MODEL_DATA_PATH, 'ohe_type2.pkl'), 'wb') as f:
         pickle.dump(ohe_type2, f)
 
     # Create DataFrames for encoded features
@@ -75,7 +71,25 @@ def encode_features(df):
     return df
 
 
-def predict_catchability(base_total, attack, sp_attack, sp_defense, defense, hp, height_m, speed, weight_kg, is_legendary, base_egg_steps, model, original_df):
+def predict_catchability(
+    base_total,
+    attack,
+    sp_attack,
+    sp_defense,
+    defense,
+    hp,
+    height_m,
+    speed,
+    weight_kg,
+    is_legendary,
+    base_egg_steps
+):
+
+    df_path = os.path.join(MODEL_DATA_PATH, 'pokemon.csv')
+    df = pd.read_csv(df_path)
+    model_path = os.path.join(MODEL_DATA_PATH, 'saved_model.joblib')
+    model = load(model_path)  # Your trained model
+
     # Create a DataFrame for the input data
     input_data = pd.DataFrame({
         'base_total': [base_total],
@@ -107,8 +121,8 @@ def predict_catchability(base_total, attack, sp_attack, sp_defense, defense, hp,
     encoded_fake_pokemon_df = encode_features(preprocessed_fake_pokemon_df)
 
     # Create X_train columns so it matches shape
-    import pickle
-    with open('../../notebooks/X_train_columns.pickle', 'rb') as file:
+    columns_path = os.path.join(MODEL_DATA_PATH, 'X_train_columns.pickle')
+    with open(columns_path, 'rb') as file:
         X_train_columns = pickle.load(file)
 
     # Ensure the new data has the same columns as the training data, in the same order
@@ -126,9 +140,7 @@ def predict_catchability(base_total, attack, sp_attack, sp_defense, defense, hp,
 
 
 if __name__=='__main__':
-    df = pd.read_csv('../../raw_data/prediction/pokemon.csv')
     # Example usage
-    model = load("../../notebooks/saved_model.joblib")  # Your trained model
     # Example input values
     base_total = 10  # Example value
     attack = 10       # Example value
@@ -154,6 +166,6 @@ if __name__=='__main__':
                                         weight_kg,
                                         is_legendary,
                                         base_egg_steps,
-                                        model,
-                                        df)
+                                        )
     print(f"Predicted Catchability: {catchability}")
+# /Users/lapiscine/code/mtthibault/catchemall/prediction/params.py
