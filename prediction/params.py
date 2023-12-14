@@ -40,9 +40,13 @@ GAR_MEMORY = os.environ.get("GAR_MEMORY")
 # )
 # Emile 11.12.2023
 CATCH_PREDICT_CSV_FILE = os.environ.get("CATCH_PREDICT_CSV_FILE")
+
+PACKAGE_PATH = os.path.dirname(os.path.dirname(__file__))
+
 LOCAL_DATA_PATH = os.path.join(
-    os.path.expanduser("~"), "code", "mtthibault", "catchemall", "raw_data"
+    PACKAGE_PATH, "raw_data"
 )
+
 
 LOCAL_REGISTRY_PATH = os.path.join(
     os.path.expanduser("~"),
@@ -94,7 +98,7 @@ URL_IMG_NORMALFLYING = (
 
 # CNN : size of images
 TARGET_SIZE = (120, 120)
-
+CNN_TRAINED_MODEL = "final_resnet_h5.h5"
 
 # Emile 05.12.23
 # Temporaire pour compatibilité avec taxifare

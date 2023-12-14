@@ -45,6 +45,9 @@ psycopg2-binary
 fastapi
 pytz
 uvicorn
+# Emile 13.12.2023 CNN api
+python-multipart
+Pillow
 
 # tests
 httpx
