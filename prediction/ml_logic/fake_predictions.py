@@ -153,18 +153,3 @@ if __name__=='__main__':
     is_legendary = 0    # Example value
     base_egg_steps = 20    # Example value
 
-    # Predict
-    catchability = predict_catchability(base_total,
-                                        attack,
-                                        sp_attack,
-                                        sp_defense,
-                                        defense,
-                                        hp,
-                                        height_m,
-                                        speed,
-                                        weight_kg,
-                                        is_legendary,
-                                        base_egg_steps,
-                                        )
-    print(f"Predicted Catchability: {catchability}")
-# /Users/lapiscine/code/mtthibault/catchemall/prediction/params.py
