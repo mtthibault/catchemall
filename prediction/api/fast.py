@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 # Emile
 import random  # for generating random catchability
 from prediction.ml_logic.preprocessor import preprocess_features
+from prediction.ml_logic.fake_predictions import predict_catchability
+
 # from prediction.ml_logic.registry import load_model  # , save_model, save_results
 from tensorflow.keras.models import load_model
 import io
@@ -109,55 +111,48 @@ async def receive_image(img: UploadFile = File(...)):
 
 
 @app.get("/predict")
-def predict(feature_1: int = 100, fetaure_2: int = 20):
+def predict(
+    base_total: int,
+    attack: int,
+    sp_attack: int,
+    sp_defense: int,
+    defense: int,
+    hp: int,
+    height_m: float,
+    speed: int,
+    weight_kg: float,
+    is_legendary: int,
+    base_egg_steps: int,
+):
     """
     Compute catchability.
     """
     print(">>>>>>>>> ✅ Dans get /predict")
 
-    # Define X_pred
-    # X_pred = pd.DataFrame({"feature_1": 100, "feature_2": 20})
-    # print(">>>>>>>>> X_pred")
-    # print(X_pred)
+    # Predict
+    catchability = predict_catchability(
+        base_total,
+        attack,
+        sp_attack,
+        sp_defense,
+        defense,
+        hp,
+        height_m,
+        speed,
+        weight_kg,
+        is_legendary,
+        base_egg_steps,
+    )
+    print(f"catchability: {catchability}")
+    res_dict = {"catchability": catchability}
+    # /Users/lapiscine/code/mtthibault/catchemall/prediction/params.py
 
-    # Compute X_pred_processed
-    print(">>>>>>>>> preprocess_features(X_pred)")
-    # X_pred_processed = preprocess_features(X_pred)
-    # print(".........")
-    # print(type(X_pred_processed))
-    # print(".........")
-    # print(X_pred_processed)
+    # # Return y_pred as json
+    # y_pred = random.randrange(0, 255)
+    # res_y_pred = round(float(y_pred), 2)
+    # res_dict = {"catchability": res_y_pred}
+    # print("res_dict type is ", type(res_dict), res_dict)
 
-    # Enable faster predictions
-    # app = FastAPI()
-    # app.state.model = load_model()
-    # y_pred = app.state.model.predict(X_pred_processed)
-
-    # Load model OK without optimization
-    # model = load_model()
-    # assert model is not None
-    # y_pred = model.predict(X_pred_processed)
-
-    # print(">>>>>>>>> ✅ Apres predict : y_pred, with shape", y_pred.shape)
-
-    # Load model OK
-    # model = load_model()
-    # print(">>>>>>>>> Apres load_model()")
-    # # return {'Avant assert'}
-    # assert model is not None
-    # print(">>>>>>>>> Apres assert")
-    # # return {'Apres assert'}
-
-    # Predict OK
-    # print(">>>>>>>>> Avant model.predict(X_pred_processed)")
-    # y_pred = model.predict(X_pred_processed)
-    # print(">>>>>>>>> ✅ Apres predict : y_pred, with shape", y_pred.shape)
-
-    # Return y_pred as json
-    y_pred = random.randrange(0, 255)
-    res_y_pred = round(float(y_pred), 2)
-    res_dict = {"catchability": res_y_pred}
-    print("res_dict type is ", type(res_dict), res_dict)
     return res_dict
 
     # return {'fare_amount': float("{:.2f}".format(y_pred[0][0]))}
